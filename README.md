@@ -42,3 +42,97 @@ private static void action(Object object) {}
 #### Object가 없다면?
 * `void action(Object object)`와 같이 모든 객체를 받을 수 있는 메서드를 만들 수 없다.
 * `Object[] objects`처럼 모든 객체를 저장할 수 있는 배열을 만들 수 없다.
+
+### toString()
+`Object.toString()` 메서드는 객체의 정보를 문자열 형태로 제공한다. 그래서 디버깅과 로깅에 유용하게 사용된다.
+이 메서드는 `Object` 클래스에 정의되므로 모든 클래스에서 상속받아 사용할 수 있다.
+
+### toString() 오버라이딩
+`Object.toString()` 메서드가 클래스 정보와 참조값을 제공하지만 이 정보만으로는 객체의 상태를 적절히 나타내지 못한다.
+그래서 보통 `toString()`을 재정의(오버라이딩)해서 보다 유용한 정보를 제공하는 것이 일반적이다.
+
+> 참고 - 객체의 참조값 직접 출력
+* `toString()`은 기본으로 객체의 참조값을 출력한다. 그런데 `toString()`이나 `hashCode()`를 재정의하면 객체의 참조값을 출력할 수 없다.
+이때는 다음 코드를 사용하면 객체의 참조값을 출력할 수 있다.
+```java
+String refValue = Integer.toHexString(System.identityHashCode(object));
+System.out.println(refValue);
+```
+
+### Object와 OCP
+만약 `Object`가 없고, 또 `Object`가 제공하는 `toString()`이 없다면
+서로 아무런 관계가 없는 객체의 정보를 출력하기 어려울 것이다. 여기서 아무 관계가 없다는 것은 공통의 부모가 없다는 뜻이다.
+아마도 다음의 `BadObjectPrinter`클래스와 같이 각각의 클래스마다 별도의 메서드를 작성해야할 것이다.
+
+#### BadObjectPrinter
+```java
+public class BadObjectPrinter {
+    
+    public static void print(Car car) {
+        System.out.println("객체 정보 출력: " + car.carInfo());
+    }
+    
+    public static void print(Dog dog) {
+        System.out.println("객체 정보 출력: " + dog.carInfo());
+    }
+    
+}
+```
+#### 구체적인 것에 의존
+`BadObjectPrinter`는 구체적인 타입인 `Car`, `Dog`를 사용한다. 
+따라서 이후에 출력해야 할 구체적인 클래스가 늘어나면 구체적인 클래스에 맞추어 메서드도 늘어나게 된다. 
+이렇게 `BadObjectPrinter`클래스가 구체적인 특정 클래스인 `Car`, `Dog`를 사용하는 것을 `의존한다`고 표현한다.
+
+#### 추상적인 것에 의존
+```java
+public class ObjectPrinter {
+    
+    public static void print(Object object) {
+        System.out.println("객체 정보 출력: " + object.toString());
+    }
+    
+}
+```
+`ObjectPrinter`는 구체적인 것에 의존하는 것이 아니라 추상적인 것에 의존한다.
+`ObjectPrinter`와 `Object`를 사용하는 구조는 다형성을 매우 잘 활용하고 있다.
+다형성을 잘 활용한다는 것은 다형적 참조와 메서드 오버라이딩을 적절하게 사용한다는 뜻이다.
+
+#### OCP 원칙
+* Open: 새로운 클래스를 추가하고, `toString()`을 오버라이딩해서 기능을 확장할 수 있다.
+* Closed: 새로운 클래스를 추가해도 `Object`와 `toString()`을 사용하는 클라이언트 코드인 `ObjectPrinter`는 변경하지 않아도 된다.
+
+> 참고 - 정적 의존관계 VS 동적 의존관계
+* 정적 의존관계는 컴파일 시간에 결정되며, 주로 클래스 간의 관계를 의미한다.
+* 동적 의존관계는 프로그램을 실행하는 런타임에 확인할 수 있는 의존관계이다. 
+`ObjectPrinter.print(Object object)`에 어떤 객체가 전달 될 지는 프로그램을 실행해봐야 알 수 있다.
+이렇게 런타임에 어떤 인스턴스를 사용하는지를 나타내는 것이 동적 의존관계이다.
+
+### eqauls() - 1. 동일성과 동등성
+`Object`는 동등성 비교를 위한 `eqauls()` 메서드를 제공한다.
+
+자바는 두 객체가 같다라는 표현을 2가지로 분리해서 제공한다.
+* 동일성(Identity): `==` 연산자를 사용해서 두 객체의 참조가 동일한 객체를 가리키고 있는지 확인
+* 동등성(Eqaulity): `equals()` 메서드를 사용하여 두객체가 논리적으로 동등한지 확인
+
+`동일`은 완전히 같음을 의미한다. 반면 `동등`은 같은 가치나 수준을 의미하지만 그 형태나 외관 등이 완전히  같지는 않을 수 있다.
+동일성은 자바 머신 기준이고 메모리의 참조가 기준이므로 물리적이다. 반면 동등성은 보통 사람이 생각하는 논리적인 기준에 맞추어 비교한다.
+
+#### Object.equals() 메서드
+```java
+public boolean equals(Object object) {
+    return (this == object);
+}
+```
+`Object`가 기본으로 제공하는 `equals()`는 `==`으로 동일성 비교를 제공한다.
+
+동등성이라는 개념은 각각의 클래스 마다 다르다. 어떤 클래스는 주민등록번호를 기반으로 동등성을 처리할 수 있고,
+어떤 클래스는 고객의 연락처를 기반으로 동등성을 처리할 수 있다. 어떤 클래스는 회원번호를 기반으로 동등성을 처리할 수 있다.
+따라서 동등성 비교를 사용하고 싶으면 `equals()` 메서드를 재정의해야 한다. 그렇지 않으면 `Object`는 동일성 비교를 기본으로 제공한다.
+
+#### 정확한 equals() 구현
+equals() 메서드를 구현할 때 지켜야 하는 규칙
+* 반사성(Reflexivity): 객체는 자기 자신과 동등해야 한다.(x.equals(x)는 항상 true)
+* 대칭성(Symmetry): 두 객체가 서로에 대해 동일하다고 판단하면, 이는 양방향으로 동일 해야 한다. (x.equals(y)가 true이면 y.equals(x)도 true)
+* 추이성(Transitivity): 만약 한 객체가 두 번째 객체와 동일하고, 두번째 객체가 세 번째 객체와 동일하면, 첫번째 객체는 세 번째 객체와 동일해야 한다.
+* 일관성(Consistency): 두 객체의 상태가 변경되지 않는 한, `equals()` 메서드는 항상 동일한 값을 반환해야 한다.
+* null에 대한 비교: 모든 객체는 `null`과 비교 했을 때 `false`를 반환해야 한다.

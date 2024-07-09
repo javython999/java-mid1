@@ -136,3 +136,41 @@ equals() 메서드를 구현할 때 지켜야 하는 규칙
 * 추이성(Transitivity): 만약 한 객체가 두 번째 객체와 동일하고, 두번째 객체가 세 번째 객체와 동일하면, 첫번째 객체는 세 번째 객체와 동일해야 한다.
 * 일관성(Consistency): 두 객체의 상태가 변경되지 않는 한, `equals()` 메서드는 항상 동일한 값을 반환해야 한다.
 * null에 대한 비교: 모든 객체는 `null`과 비교 했을 때 `false`를 반환해야 한다.
+***
+## 불변객체
+### 기본형과 참조형의 공유
+자바의 데이터 타입은 크게 기본형(Primitive Type)과 참조형(Reference Type)으로 나눌 수 있다.
+* 기본형: 하나의 값을 여러 변수에서 절대 공유하지 않는다.
+* 참조형: 하나의 객체를 참조값을 통해 여러 변수에서 공유할 수 있다.
+
+### 공유 참조와 사이드 이펙트
+사이드 이펙트는 프로그래밍에서 어떤 계산이 주된 작업 외에 추가적인 부수 효과를 일으키는 것을 말한다.
+프로그래밍에서 사이드 이펙트는 보통 부정적인 의미로 사용되는데, 프로그램의 특정 부분에서 발생한 변경이 의도치 않게
+다른 부분에 영향을 미치는 경우에 발생한다. 이로 인해 디버깅이 어려워지고 코드의 안정성이 저하될 수 있다.
+```java
+Address a = new Addres("서울");
+Address b = a;
+b.setValue("부산");
+System.out.println("a = " + a.getValue()); // "부산"
+System.out.println("b = " + b.getValue()); // "부산"
+```
+
+### 사이드 이펙트 해결 방안
+`a`와 `b`가 처음부터 다른 인스턴스를 참조하면 된다.
+```java
+import lang.immutable.address.Address;
+
+Address a = new Address("서울");
+Address b = new Address("서울");
+b.setValue("부산");
+System.out.println("a = " + a.getValue()); // "서울"
+System.out.println("b = " + b.getValue()); // "부산"
+```
+> 하지만 여러 변수가 하나의 객체를 공유하는 것을 막을 방법은 없다.
+```java
+import lang.immutable.address.Address;
+
+Address a = new Address("서울");
+Address b = a; // 참조값 대입을 막을 수 있는 방법은 없다.
+```
+

@@ -1,5 +1,8 @@
 package lang.immutable.address;
 
+import lombok.Getter;
+
+@Getter
 public class ImmutableAddress {
 
     private final String value;

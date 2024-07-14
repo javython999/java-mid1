@@ -215,3 +215,78 @@ public final class String {
 
 * 자바에서 문자열을 더할 때는 `String`이 제공하는 `concat()`과 같은 메서드를 사용해야 한다.
 * 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의상 특별히 `+`연산을 제공한다.
+
+### String 클래스 비교
+`String`클래스를 비교할 때는 `==` 비교가 아니라 항상 `equals()` 비교를 해야 한다.
+* 동일성(Identity): `==` 연산자를 사용해서 두 객체의 참조가 동일한 객체를 가리키고 있는지 확인
+* 동등성(Eqaulity): `equals()`메서드를 사용하여 두 객체가 논리적으로 같은지 확인
+
+#### 문자열 리터럴, 문자열 풀
+```java
+String str3 = "hello";
+String str4 = "hello";
+
+System.out.println("리터럴 == 비교 : " + (str3 == str4)); // true
+System.out.println("리터럴 equals() 비교 : " + (str3.equals(str4))); // true
+```
+* `String str3 = "hello"`와 같이 문자열 리터럴을 사용하는 경우 자바는 메모리 효율성과 성능 최적화를 위해 문자열 풀을 사용한다.
+* 자바가 실행되는 시점에 클래스에 문자열 리터럴이 있으면 문자열 풀에 `String`인스턴스를 미리 만들어 둔다. 이 때 같은 문자열이 있으면 만들지 않는다.
+* `String str3 = "hello"`와 같이 문자열 리터럴을 사용하면 문자열 풀에서 `"hello"`라는 문자를 가진 `String` 인스턴스를 찾는다. 그리고 찾은 인스턴스의 참조를 반환한다.
+* `String str4 = "hello"`의 경우 `"hello"` 문자열 리터럴을 사용하므로 문자열 풀에서 `str3`과 같은 참조를 사용한다.
+* 문자열 풀 덕분에 같은 문자를 사용하는 경우 메모리 사용을 줄이고 문자를 만드는 시간도 줄어들기 때문에 성능도 최적화 할 수 있다.
+
+> 참고: 프로그래밍에서 풀은 공용 자원을 모아둔 곳을 뜻한다. 여러 곳에서 함께 사용할 수 있는 객체를 필요할 때마다 생성하고, 제거하는 것은 비효율 적이다.   
+대신에 이렇게 문자열 풀에 필요한 String 인스턴스를 미리 만들어두고 여러곳에서 재사용할 수있다면 성능과 메모리를 더 최적화 할 수 있다.   
+참고로 문자열 풀은 힙 영역을 사용한다. 그리고 문자열 풀에서 문자를 찾을 때는 해시 알고리즘을 사용하기 때문에 매우 빠른 속도로 원하는 String 인스턴스를 찾을 수 있다.
+
+문자열 비교는 항상 `equals()`를 사용해서 동등성 비교를 해야 한다.
+
+### String 불변 객체
+`String`은 불변 객체이다. 따라서 생성 이후에는 절대로 내부의 문자열 값을 변경할 수 없다.
+
+#### String이 불변 객체로 설계된 이유
+`String`이 불변 객체로 설계된 이유는 앞서 불변 객체에서 배운 내용에 추가로 다음과 같은 이유도 있다.
+`문자열 풀`에 있는 `String` 인스턴스의 값이 중간에 변경되면 같은 문자열을 참고하는 다른 변수의 값도 함께 변경된다.
+* `String`은 자바 내부에서 문자열 풀을 통해 최적화를 한다.
+* 만약 `String` 내부의 값을 변경할 수 있다면, 기존에 문자열 풀에서 같은 문자를 참조하는 변수의 모든 문자가 함께 변경되어 버리는 문제가 발생한다.
+`String` 클래스는 불변으로 설계되어 이런 사이드 이펙트 문제가 발생하지 않는다.
+
+### String 클래스 주요 메서드
+#### 문자열 정보 조회
+* `length()`: 문자열의 길이를 반환한다.
+* `isEmpty()`: 문자열이 비어있는지 확인한다.(길이가 0)
+* `isBlank()`: 문장려이 비어있는지 확인한ㄷ.(길이가 0이거나 공백(Whitespace)만 있는 경우), 자바11
+* `charAt(int index)`: 지정된 인덱스에 있는 문자를 반환한다.
+
+#### 문자열 비교
+* `equals(Object anObject)`: 두 문자열이 동일한지 비교한다.
+* `eqaulsIgnoreCase(String anotherString)`: 두 문자열을 대소문자 구분 없이 비교한다.
+* `compateTo(String anotherString)`: 두 문자열을 사전 순으로 비교한다.
+* `compateToIgnoreCase(String str)`: 두 문자열을 대소문자 구분 없이 사전적으로 비교한다.
+* `startsWith(String prefix)`: 문자열이 특정 접두사로 시작하는지 확인한다.
+* `endWith(String suffix)`: 문자열이 특정 접미사로 끝나는지 확인한다.
+
+#### 문자열 검색
+* `contains(CharSequence s)`: 문자열이 특정 문자열을 포함하고 있는지 확인한다.
+* `indexOf(String ch)` / `indexOf(String ch, int fromIndx)`: 문자열이 처음 등장하는 위치를 반환한다.
+* `lastIndexOf(String ch)`: 문자열이 마지막 등장하는 위치를 반환한다.
+
+#### 문자열 조작 및 변환
+* `subString(int beginIndex)` / `substring(int beginIndex, int endIndex)`: 문자열의 부분 문자열을 반환한다.
+* `concat(String str)`: 문자열의 끝에 다른 문자열을 붙인다.
+* `replace(CharSequence target, CharSequence replacement`): 특정 문자열을 새 문자열로 대체한다.
+* `replaceAll(String regex, String replacement)`: 문자열에서 정규 표현식과 일치하는 첫 번째 부분을 새문자열로 대체한다.
+* `replaceFirst(String regex,String replacement)`: 문자열에 정규 표현식과 일치하는 첫 번째 부분을 새문자열로 대체한다.
+* `toLowerCase()` / `toUpperCase()`: 문자열을 소문자나 대문자로 변환한다.
+* `trim()`: 문자열 양쪽 끝의 공백을 제거한다. 단순 `Whitespace`만 제거할 수 있다.
+* `strip()`: `Whitespace`와 유니코드 공백을 포함해서 제거한다. 자바11
+
+#### 문자열 분할 및 조합
+* `split(String regex)`: 문자열을 정규 표현식을 기준으로 분할 한다.
+* `join(Charsequence delimiter, Charsequence ... elements)`: 주어진 구분자로 여러 문자열을 결합한다.
+
+#### 기타 유틸리티
+* `valueOf(Object obj)`: 다양한 타입을 문자열로 변환한다.
+* `toCharArray()`: 문자열을 문자 배열로 변환한다.
+* `format(String format, Object... args)`: 형식 문자열과 인자를 사용하여 새로운 문자열을 생성한다.
+* `matches(String regex)`: 문자열이 주어진 정규 표현식과 일치하는지 확인한다.

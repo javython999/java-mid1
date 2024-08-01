@@ -648,3 +648,26 @@ for(int i = 0; i<100000; i++){
 
 `Period`: 두 날짜 사이의 간격을 년, 월, 일, 단위로 나타낸다.
 `Duration`: 두 시간의 간격을 시, 분, 초(나노초) 단위로 나타낸다.
+
+### 날짜와 시간의 핵심 인터페이스
+* 특정 시점의 시간: `Temporal`(TemporalAccessor 포함) 인터페이스를 구현한다.
+  * 구현으로는 `LocalDateTime`, `LocalDate`, `LocalTime`, `ZonedDateTime`, `OffsetDateTime`, `Instanct`등이 있다.
+* 시간의 간격(기간): `TemporalAmount` 인터페이스를 구현한다.
+  * 구현으로는 `Period`, `Duration`이 있다.
+
+#### TemporalAccessor
+* 날짜와 시간을 읽기 위한 기본 인터페이스
+* 이 인터페이스는 특정 시점의 날짜와 시간 정보를 읽을 수 있는 최소한의 기능을 제공한다.
+
+#### Temporal 인터페이스
+* `TemporalAccessor`의 하위 인터페이스로, 날짜와 시간을 조작(추가, 빼기 등) 하기 위한 기능을 제공한다. 이를 통해 날짜와 시간을 변경하거나 조정할 수 있다.
+
+#### 시간 필드 - ChronoField
+`ChronoField`는 날짜 및 시간을 나타내는 데 사용되는 열거형이다. 이 열거형은 다양한 필드를 통해 날짜와 시간의 특정 부분을 나타낸다.
+* `TemporalField`인터페이스는 날짜와 시간을 나타내는데 사용된다. 주로 사용되는 구현체는 `java.time.temporal.ChronoField` 열거형으로 구현되어 있다.
+* `ChronoField`는 다양한 필드를 통해 날짜와 시간의 특정 부분을 나타낸다. 여기에는 월, 일, 시간, 분 등이 포함된다.
+  * 예를 들어 2024년 8월 16일이라고 하면 각각의 필드는 다음과 같다.
+    * `YEAR`: 2024
+    * `MONTH_OF_YEAR`: 8
+    * `DAY_OF_MONTH`: 16
+  * 단순히 시간의 단위 하나하나를 뜻하는 `ChronoUnit`과는 다른 것을 알 수있다. `ChronoField`를 사용해야 날짜와 시간의 각 필드 중에 원하는 데이터를 조회할 수 있다.
